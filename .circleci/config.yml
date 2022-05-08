@@ -18,7 +18,6 @@ jobs:
               --template-file template.yml \
               --stack-name proj-4-${CIRCLE_WORKFLOW_ID:0:5} \
               --region us-east-2
-      - destroy_environment
 
 # Exercise: Config and Deployment
   configure_infrastructure: 
