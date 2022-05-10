@@ -107,7 +107,7 @@ jobs:
 # Exercise: Smoke Testing
   smoke_test:
     docker:
-      - image: amazon/aws-cli
+      - image: ubuntu:latest
     steps:
       - run: apk add --update curl
       - run:
