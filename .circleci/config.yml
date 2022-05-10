@@ -21,33 +21,33 @@ commands:
           
 jobs:
 
-  print_greetings:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - print_pipeline_id:
-          id: << pipeline.id >>
-      - run: echo HELLO
-      - run: echo WORLD
-      - run: echo $_env_name
+  # print_greetings:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - print_pipeline_id:
+  #         id: << pipeline.id >>
+  #     - run: echo HELLO
+  #     - run: echo WORLD
+  #     - run: echo $_env_name
 
-  upload_file:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - run: echo "THIS IS A SAMPLE TEXT" > ~/output.txt  
-      - persist_to_workspace:
-          root: ~/
-          paths: 
-            - output.txt  
+  # upload_file:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - run: echo "THIS IS A SAMPLE TEXT" > ~/output.txt  
+  #     - persist_to_workspace:
+  #         root: ~/
+  #         paths: 
+  #           - output.txt  
 
-  download_file:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/output.txt 
+  # download_file:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run: cat ~/output.txt 
  
   create_infrastructure: 
     docker:
