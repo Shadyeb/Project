@@ -1,16 +1,9 @@
 
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
 orbs:
-  # Choose either one of the orbs below
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
   aws-cli: circleci/aws-cli@2.0.3
-# Orchestrate or schedule a set of jobs
 
 commands:
-  # Exercise: Reusable Job Code
   print_pipeline_id:
     parameters:
       id: 
@@ -18,21 +11,16 @@ commands:
     steps:
       - run: echo << parameters.id >>
 
-  # Exercise - Rollback
   destroy_environment:
     steps:
       - run:
           name: Destroy environment
-          # ${CIRCLE_WORKFLOW_ID} is a Built-in environment variable 
-          # ${CIRCLE_WORKFLOW_ID:0:5} takes the first 5 chars of the variable CIRCLE_CI_WORKFLOW_ID 
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
           
 jobs:
-  # Exercise: Creating a Simple Workflow
-  # Exercise: Environment Variables
-  # Exercise: Reusable Job Code 
+
   print_greetings:
     docker:
       - image: circleci/node:13.8.0
@@ -62,8 +50,6 @@ jobs:
           at: ~/
       - run: cat ~/output.txt 
  
-  # Exercise: Infrastructure Creation
-  # Exercise - Rollback
   create_infrastructure: 
     docker:
       - image: amazon/aws-cli
@@ -76,19 +62,16 @@ jobs:
               --template-file template.yml \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
               --region us-east-2
-      # Fail the job intentionally to simulate an error.
-      # Uncomment the line below if you want to fail the current step
-      #- run: return 1
+
       - destroy_environment
 
-  # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["f9:04:c9:ad:4a:1a:82:3d:a6:92:b1:e6:0e:07:5d:7d"] # You can get this ID in the section where you registered the SSH Key
+          fingerprints: ["f9:04:c9:ad:4a:1a:82:3d:a6:92:b1:e6:0e:07:5d:7d"] 
       - run:
           name: Install dependencies
           command: |
@@ -103,7 +86,6 @@ jobs:
           command: |
             ansible-playbook -i inventory.txt main-remote.yml
 
-# Exercise: Smoke Testing
   smoke_test:
     docker:
       - image: alpine:latest
@@ -133,10 +115,8 @@ jobs:
             --template-file bucket.yml \
             --stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
             --parameter-overrides MyBucketName="mybucket-${CIRCLE_WORKFLOW_ID:0:7}"
-      # Uncomment the step below if yoou wish to upload all contents of the current directory to the S3 bucket
-      - run: aws s3 sync . s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
+      #- run: aws s3 sync . s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
 
-# Fetch and save the pipeline ID (bucket ID) responsible for the last release.
 get_last_deployment_id:
   docker:
     - image: amazon/aws-cli
@@ -154,8 +134,7 @@ get_last_deployment_id:
         paths: 
           - textfile.txt 
 
-# Executes the cloudfront.yml template that will modify the existing CloudFront Distribution, change its target from the old bucket to the new bucket - `mybucket-${CIRCLE_WORKFLOW_ID:0:7}`. 
-# Notice here we use the stack name `production-distro` which is the same name we used while deploying to the S3 bucket manually.
+
 promote_to_production:
   docker:
     - image: amazon/aws-cli
@@ -167,7 +146,6 @@ promote_to_production:
           aws cloudformation deploy \
           --template-file cloudfront.yml \
 
-# Destroy the previous production version's S3 bucket and CloudFormation stack. 
 clean_up_old_front_end:
   docker:
     - image: amazon/aws-cli
@@ -178,23 +156,14 @@ clean_up_old_front_end:
         at: ~/
     - run:
         name: Destroy the previous S3 bucket and CloudFormation stack. 
-        # Use $OldBucketID environment variable or mybucket644752792305 below.
-        # Similarly, you can create and use $OldStackID environment variable in place of production-distro 
         command: |
           export OldBucketID=$(cat ~/textfile.txt)
           aws s3 rm "s3://${OldBucketID}" --recursive
  
 workflows:
-  # Name the workflow "welcome"
   my_workflow:
-    # Run the welcome/run job in its own container
     jobs:
-      - welcome/run
-      - print_greetings
-      - upload_file
-      - download_file:
-          requires:
-            - upload_file
+
       - create_infrastructure
       - configure_infrastructure
       - create_and_deploy_front_end
