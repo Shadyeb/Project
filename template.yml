@@ -1,16 +1,11 @@
-# Exercise - Rollback
-AWSTemplateFormatVersion: 2010-09-09
-Description: ND9991 C3 L4 
 Resources:
-  EC2Instance:
+  Ec2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
-      # Change this, as applicable to you      
       KeyName: my-key
-      ImageId: 'ami-0aeb7c931a5a61206' 
-      InstanceType: t3.micro
+      ImageId: 'ami-0aeb7c931a5a61206'
   InstanceSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -19,4 +14,4 @@ Resources:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 0.0.0.0/0 
+          CidrIp: 0.0.0.0/0
