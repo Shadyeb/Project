@@ -31,7 +31,6 @@ jobs:
       - run: echo WORLD
       - run: echo $_env_name
 
-  # Exercise: Sharing Files (Job names may have changed)
   upload_file:
     docker:
       - image: circleci/node:13.8.0
@@ -160,7 +159,7 @@ jobs:
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm "s3://${OldBucketID}" --recursive
 
- workflows:
+workflows:
     my_workflow:
       jobs:
         - create_infrastructure
